@@ -103,6 +103,7 @@ public:
 	std::vector<cgra::vec3> m_points;
 	bool color = false;
 	void setSelected(int);
+	int getSelected();
 	void swapAxis();
 	void applyRotation(int);
 	bone* getBone();

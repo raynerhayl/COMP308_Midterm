@@ -163,18 +163,22 @@ void cursorPosCallback(GLFWwindow* win, double xpos, double ypos) {
 // Called for mouse button event on since the last glfwPollEvents
 //
 void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
-	cout << "Mouse Button Callback :: button=" << button << "action=" << action << "mods=" << mods << "window=" << win << endl;
+	//cout << "Mouse Button Callback :: button=" << button << "action=" << action << "mods=" << mods << "window=" << win << endl;
 	// send messages to the GUI manually
 	SimpleGUI::mouseButtonCallback(win, button, action, mods);
-
 	//if (inGUI() == false) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT&&action == 0) {
-
-		if (g_skeleton->keyframeMode) {
-			g_skeleton->setSelected(
-				pixel[0] +
+		if (g_skeleton->keyframeMode && mods == 2) {
+		  int id =      pixel[0] +
 				pixel[1] * 256 +
-				pixel[2] * 256 * 256);
+				pixel[2] * 256 * 256;
+		//cout <<  g_skeleton->getSelected() <<  endl;
+		  if(g_skeleton->getSelected() == id){
+		   g_skeleton->setSelected(-1); 
+		   //cout << "new selected " <<  g_skeleton->getSelected();
+		  } else {
+			g_skeleton->setSelected(id);
+		  }
 		}
 	}
 	else if (button == GLFW_MOUSE_BUTTON_RIGHT&&action == 1) {
@@ -233,11 +237,11 @@ void scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
 // Called for every key event on since the last glfwPollEvents
 //
 void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
-	//cout << "Key Callback :: key=" << key << "scancode=" << scancode
+	//cout << "Key Callback :: key=" << key << "scancode=" << scancode;
    // 	<< "action=" << action << "mods=" << mods << endl;
    // YOUR CODE GOES HERE
    // ...
-	cout << key << endl;
+	//cout << key << endl;
 	if (action == 0) {
 		switch (key) {
 		case 87:if (win == g_window) {
@@ -320,8 +324,8 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 // Called for every character input event on since the last glfwPollEvents
 //
 void charCallback(GLFWwindow *win, unsigned int c) {
-	// cout << "Char Callback :: c=" << char(c) << endl;
-	// Not needed for this assignment, but useful to have later on
+	//cout << "Char Callback :: c=" << char(c) << endl;
+	// Not needed for this assignment, but useful to have later on	  
 }
 
 
@@ -506,6 +510,7 @@ void renderGUI() {
 		g_skeleton->splineMode = false;
 		g_skeleton->animateMode = true;
 		g_skeleton->keyframeMode = false;
+		g_skeleton->setSelected(-1);
 	}
 
 	if (ImGui::Selectable("KeyFrame Mode")) {

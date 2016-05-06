@@ -51,7 +51,6 @@ float Skeleton::height(vec2 vec) {
 // You may need to revise this function for Completion/Challenge
 //-------------------------------------------------------------
 void Skeleton::renderSkeleton() {
-
 	glPushMatrix();
 
 	if (color == true) {
@@ -319,13 +318,25 @@ void Skeleton::renderBone(bone *b) {
 }
 
 bool Skeleton::isSelected(bone *b) {
+	if(selected == -1){
+	  cout << "NEGATIVE" << endl;
+	}
 	return selected >= 0 && selected < m_bones.size() && m_bones[selected].name == b->name;
 }
 
 void Skeleton::setSelected(int index) {
-	if (index > 0 && index < m_bones.size()) {
+	cout << "Setting: " << index << endl;
+	if (index < m_bones.size()) {
 		selected = index;
 	}
+	
+	if(index == -1){
+	 selected = -1; 
+	}
+}
+
+int Skeleton::getSelected(){
+  return selected;
 }
 
 
