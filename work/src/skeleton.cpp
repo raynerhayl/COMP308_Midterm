@@ -91,6 +91,7 @@ void Skeleton::renderSkeleton() {
 		}
 	}
 	else if (keyframeMode) {
+		currentLerpTime = 0.0;
 		renderBone(&m_bones[0]);
 
 	}
@@ -237,28 +238,44 @@ void Skeleton::renderBone(bone *b) {
 		if (b->rotations.size() > 0) {
 
 			if (b->rotations.size() > 1) {
-				double xRot = b->rotations[frame][3];
-				double yRot = b->rotations[frame][4];
-				double zRot = b->rotations[frame][5];
 
-				double xRot2 = 0;
-				double yRot2 = 0;
-				double zRot2 = 0;
+				vec3 p1 = vec3 (b->rotations[frame][3],b->rotations[frame][4],b->rotations[frame][5]);
+				if(frame+1<b->rotations.size())
+				{
+					vec3 p2 = vec3 (b->rotations[frame+1][3],b->rotations[frame+1][4],b->rotations[frame+1][5]);
+					vec3 rot = mix(p1, p2, currentLerpTime);
 
-				if (frame < b->rotations.size()-1) {
-					xRot2 = b->rotations[frame+1][3];
-					yRot2 = b->rotations[frame+1][4];
-					zRot2 = b->rotations[frame+1][5];
-				}
-				else {
-					xRot2 = b->rotations[0][3];
-					yRot2 = b->rotations[0][4];
-					zRot2 = b->rotations[0][5];
+					glRotated(rot.z,0,0,1);
+					glRotated(rot.y,0,1,0);
+					glRotated(rot.x,1,0,0);
+				} else {
+					glRotated(p1.z,0,0,1);
+					glRotated(p1.y,0,1,0);
+					glRotated(p1.x,1,0,0);
 				}
 
-				quat lerpRot = slerp(quat(zRot, yRot, xRot), quat(zRot2, yRot2, xRot2), currentLerpTime);
-				//cout << lerpRot << endl;
-				glMultMatrixf((GLfloat *)((mat4)lerpRot));
+
+				// double xRot = b->rotations[frame][3];
+				// double yRot = b->rotations[frame][4];
+				// double zRot = b->rotations[frame][5];
+
+				// double xRot2 = 0;
+				// double yRot2 = 0;
+				// double zRot2 = 0;
+
+				// if (frame < b->rotations.size()-1) {
+				// 	xRot2 = b->rotations[frame+1][3];
+				// 	yRot2 = b->rotations[frame+1][4];
+				// 	zRot2 = b->rotations[frame+1][5];
+				// }
+				// else {
+				// 	xRot2 = b->rotations[0][3];
+				// 	yRot2 = b->rotations[0][4];
+				// 	zRot2 = b->rotations[0][5];
+				// }				
+				
+				// quat lerpRot = slerp(quat(zRot, yRot, xRot), quat(zRot2, yRot2, xRot2), currentLerpTime);
+				// glMultMatrixf((GLfloat *)((mat4)lerpRot));
 			}
 			else {
 				double xRot = b->rotations[frame][3];
@@ -318,14 +335,11 @@ void Skeleton::renderBone(bone *b) {
 }
 
 bool Skeleton::isSelected(bone *b) {
-	if(selected == -1){
-	  cout << "NEGATIVE" << endl;
-	}
+
 	return selected >= 0 && selected < m_bones.size() && m_bones[selected].name == b->name;
 }
 
 void Skeleton::setSelected(int index) {
-	cout << "Setting: " << index << endl;
 	if (index < m_bones.size()) {
 		selected = index;
 	}
@@ -342,9 +356,6 @@ int Skeleton::getSelected(){
 
 
 void Skeleton::applyRotation(int rot) {
-
-
-
 	if (selected > 0 && selected < m_bones.size()) {
 		bone* b = &m_bones[selected];
 		//b->rotations[0][0] = b->rotations[0][0] + rot;

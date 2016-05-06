@@ -15,6 +15,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <stdexcept>
 
@@ -252,6 +253,7 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 				}
 				break;
 		case 83:if (g_skeleton->keyframeMode) {
+
 			g_skeleton->saveFrame();
 		}
 				break;
